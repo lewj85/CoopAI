@@ -1,19 +1,12 @@
-import random
-import time
-from agents import *
-import numpy as np
-import tensorflow as tf
-from keras.models import Model, load_model
+import coopAI
 
-# global variables
-BOARD_SIZE = 12
-NUM_PLAYERS = 4
-ROUNDS = 100000
-DISPLAY = False
-STOP = False
-# format = [row, col]
+BOARD_SIZE = coopAI.BOARD_SIZE
+NUM_PLAYERS = coopAI.NUM_PLAYERS
 
 
+###################################################
+# AGENTS
+###################################################
 def greedy_clockwise(i, occupied_spaces, score):
     player = occupied_spaces[i]
     players = occupied_spaces[:NUM_PLAYERS]
@@ -87,101 +80,3 @@ def greedy_clockwise(i, occupied_spaces, score):
     # if stuck against a wall and can't move, stand still (ie. don't do anything)
 
     return occupied_spaces
-
-
-def coop_ai():
-    sess = tf.Session()
-    saver = tf.train.import_meta_graph('./simple_simple_clean_copy1.meta')
-    ckpt = tf.train.get_checkpoint_state('./')
-    # saver.restore(sess, tf.train.latest_checkpoint('./'))
-    saver.restore(sess, ckpt.model_checkpoint_path)
-    model = load_model('./dqn3nnowood_332_99_0001_1_sgd_1000_no_a95d_filt25_q1_bt_continue_final.h5')
-
-
-###################################################
-# GAME
-###################################################
-def initialize_board():
-    # initialize players
-    p1 = [3, 3]  # team 1
-    p2 = [3, BOARD_SIZE-2]  # team 2
-    p3 = [BOARD_SIZE-2, BOARD_SIZE-2]  # team 1
-    p4 = [BOARD_SIZE-2, 3]  # team 2
-    occupied_spaces = [p1, p2, p3, p4]
-
-    # initialize food
-    f1 = find_empty_spot(occupied_spaces)
-    occupied_spaces.append(f1)
-    f2 = find_empty_spot(occupied_spaces)
-    occupied_spaces.append(f2)
-    f3 = find_empty_spot(occupied_spaces)
-    occupied_spaces.append(f3)
-    f4 = find_empty_spot(occupied_spaces)
-    occupied_spaces.append(f4)
-
-    return occupied_spaces
-
-
-def find_empty_spot(occupied_spaces):
-    while True:
-        spot = [random.randint(1, BOARD_SIZE), random.randint(1, BOARD_SIZE)]
-        if spot not in occupied_spaces:
-            return spot
-
-
-def play_round(occupied_spaces, score):
-    for i in range(NUM_PLAYERS):
-        occupied_spaces = greedy_clockwise(i, occupied_spaces, score)
-
-    return occupied_spaces, score
-
-
-def display_board(occupied_spaces, score):
-    print("\n\n\n\n" + ". " * (BOARD_SIZE+1))
-    for row in range(1, BOARD_SIZE+1):
-        row_string = "" + (". " * (BOARD_SIZE+1))
-        i = 1
-        for player in occupied_spaces[:NUM_PLAYERS]:
-            if player[0] == row:
-                row_string = row_string[:player[1]*2-1] + str(i) + row_string[player[1]*2:]
-            i += 1
-        for food in occupied_spaces[NUM_PLAYERS:]:
-            if food[0] == row:
-                row_string = row_string[:food[1]*2-1] + "o" + row_string[food[1]*2:]
-        print(row_string)
-    print("score:", score)
-
-
-###################################################
-# MAIN
-###################################################
-def main():
-    # initialize the board
-    occupied_spaces = initialize_board()
-
-    # initialize scores
-    score = [0, 0]
-
-    if DISPLAY:
-        display_board(occupied_spaces, score)
-        if STOP:
-            input()
-        else:
-            time.sleep(0.5)
-
-    # play some rounds
-    for i in range(ROUNDS):
-        occupied_spaces, score = play_round(occupied_spaces, score)
-
-        if DISPLAY:
-            display_board(occupied_spaces, score)
-            if STOP:
-                input()
-            else:
-                time.sleep(0.5)
-
-    print("Final score:", score)
-
-
-if __name__ == "__main__":
-    main()
