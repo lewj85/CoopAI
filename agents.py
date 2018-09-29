@@ -1,82 +1,72 @@
-import coopAI
-
-BOARD_SIZE = coopAI.BOARD_SIZE
-NUM_PLAYERS = coopAI.NUM_PLAYERS
+from coopAI import BOARD_SIZE, NUM_PLAYERS
 
 
-###################################################
-# AGENTS
-###################################################
-def greedy_clockwise(i, occupied_spaces, score):
-    player = occupied_spaces[i]
-    players = occupied_spaces[:NUM_PLAYERS]
-    foods = occupied_spaces[NUM_PLAYERS:]
+class GreedyClockwiseAgent:
+    def __init__(self, position):
+        self.position = position
+        self.target = None
+        self.stuck = False
+        self.action = None
 
-    # find closest food
-    closest_food = [BOARD_SIZE * 2, [0, 0]]
-    j = NUM_PLAYERS
-    for food in foods:
-        # manhattan distance
-        # NOTE: does not take into account obstacles (other players)
-        distance = abs(player[0] - food[0]) + abs(player[1] - food[1])
-        if distance < closest_food[0]:
-            closest_food = [distance, food, j]
-        j += 1
-    # move toward it in clockwise preference: up > right > down > left
-    moved = False
-    # check up
-    if player[0] > closest_food[1][0]:
-        # make sure you stay on the board
-        if player[0]-1 >= 1:
-            new_position = [player[0]-1, player[1]]
-            # if not occupied by a player, move
-            if new_position not in players:
-                occupied_spaces[i] = new_position
+    def move(self, board):
+        desired_position = self.position
+
+        # find closest food
+        self.target = [BOARD_SIZE * 2, [0, 0]]
+        for food in board.foods:
+            # manhattan distance
+            # NOTE: does not take into account obstacles (other players)
+            distance = abs(self.position[0] - food.position[0]) + abs(self.position[1] - food.position[1])
+            if distance < self.target[0]:
+                self.target = [distance, food]
+
+        # move toward it in clockwise preference: up > right > down > left
+        moved = False
+        # check up
+        if self.position[0] > self.target[1].position[0]:
+            # make sure you stay on the board
+            if self.position[0]-1 >= 1:
+                desired_position = [self.position[0]-1, self.position[1]]
+                self.action = "u"
                 moved = True
-            # if food is eaten, update score and move food
-            if new_position in foods:
-                score[i % 2 == 1] += 1
-                occupied_spaces[closest_food[2]] = find_empty_spot(occupied_spaces)
-    # check right
-    if not moved and player[1] < closest_food[1][1]:
-        # make sure you stay on the board
-        if player[1]+1 <= BOARD_SIZE:
-            new_position = [player[0], player[1]+1]
-            # if not occupied by a player, move
-            if new_position not in players:
-                occupied_spaces[i] = new_position
+        # check right
+        if not moved and self.position[1] < self.target[1].position[1]:
+            # make sure you stay on the board
+            if self.position[1]+1 <= BOARD_SIZE:
+                desired_position = [self.position[0], self.position[1]+1]
+                self.action = "r"
                 moved = True
-            # if food is eaten, update score and move food
-            if new_position in foods:
-                score[i % 2 == 1] += 1
-                occupied_spaces[closest_food[2]] = find_empty_spot(occupied_spaces)
-    # check down
-    if not moved and player[0] < closest_food[1][0]:
-        # make sure you stay on the board
-        if player[0]+1 <= BOARD_SIZE:
-            new_position = [player[0]+1, player[1]]
-            # if not occupied by a player, move
-            if new_position not in players:
-                occupied_spaces[i] = new_position
+        # check down
+        if not moved and self.position[0] < self.target[1].position[0]:
+            # make sure you stay on the board
+            if self.position[0]+1 <= BOARD_SIZE:
+                desired_position = [self.position[0]+1, self.position[1]]
+                self.action = "d"
                 moved = True
-            # if food is eaten, update score and move food
-            if new_position in foods:
-                score[i % 2 == 1] += 1
-                occupied_spaces[closest_food[2]] = find_empty_spot(occupied_spaces)
-    # check left
-    if not moved and player[1] > closest_food[1][1]:
-        # make sure you stay on the board
-        if player[1]-1 >= 1:
-            new_position = [player[0], player[1]-1]
-            # if not occupied by a player, move
-            if new_position not in players:
-                occupied_spaces[i] = new_position
-                # moved = True
-            # if food is eaten, update score and move food
-            if new_position in foods:
-                score[i % 2 == 1] += 1
-                occupied_spaces[closest_food[2]] = find_empty_spot(occupied_spaces)
+        # check left
+        if not moved and self.position[1] > self.target[1].position[1]:
+            # make sure you stay on the board
+            if self.position[1]-1 >= 1:
+                desired_position = [self.position[0], self.position[1]-1]
+                self.action = "l"
 
-    # if stuck against a wall and can't move, stand still (ie. don't do anything)
+        # NOTE: if stuck against a wall and can't move, stand still (ie. don't change desired_position)
 
-    return occupied_spaces
+        return desired_position
+
+
+class CooperativeAI:
+    def __init__(self, position):
+        self.position = position
+        self.target = None
+        self.stuck = False
+        self.action = None
+
+    def move(self, board):
+        sess = tf.Session()
+        saver = tf.train.import_meta_graph('./simple_simple_clean_copy1.meta')
+        ckpt = tf.train.get_checkpoint_state('./')
+        # saver.restore(sess, tf.train.latest_checkpoint('./'))
+        saver.restore(sess, ckpt.model_checkpoint_path)
+        model = load_model('./dqn3nnowood_332_99_0001_1_sgd_1000_no_a95d_filt25_q1_bt_continue_final.h5')
+        return desired_position

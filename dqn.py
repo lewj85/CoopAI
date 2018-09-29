@@ -1,8 +1,7 @@
 from keras.models import Model, load_model
-from keras.initializers import Constant
 from keras.layers import Conv2D, Dense, Flatten, Input, concatenate
 from keras.regularizers import l2
-from keras.optimizers import Adam
+from keras.optimizers import SGD
 import numpy as np
 import json
 import copy
@@ -14,7 +13,7 @@ def main():
 
     # Create computational graph
     lr = 0.0001
-    sgd = optimizers.SGD(lr=lr, decay=0.0, momentum=0.0, nesterov=False)
+    sgd = SGD(lr=lr, decay=0.0, momentum=0.0, nesterov=False)
     model.compile(loss='mean_squared_error', optimizer=sgd)
 
     # Prep data

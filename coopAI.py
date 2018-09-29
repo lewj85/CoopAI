@@ -1,186 +1,139 @@
 import random
 import time
 from agents import *
-import numpy as np
-import tensorflow as tf
-from keras.models import Model, load_model
 
 # global variables
-BOARD_SIZE = 12
+BOARD_SIZE = 8
 NUM_PLAYERS = 4
+NUM_FOOD = 4
 ROUNDS = 100000
 DISPLAY = False
 STOP = False
-# format = [row, col]
+SPEED = 0.4
+# format = [row, col], starts at [1, 1]
 
 
-def greedy_clockwise(i, occupied_spaces, score):
-    player = occupied_spaces[i]
-    players = occupied_spaces[:NUM_PLAYERS]
-    foods = occupied_spaces[NUM_PLAYERS:]
-
-    # find closest food
-    closest_food = [BOARD_SIZE * 2, [0, 0]]
-    j = NUM_PLAYERS
-    for food in foods:
-        # manhattan distance
-        # NOTE: does not take into account obstacles (other players)
-        distance = abs(player[0] - food[0]) + abs(player[1] - food[1])
-        if distance < closest_food[0]:
-            closest_food = [distance, food, j]
-        j += 1
-    # move toward it in clockwise preference: up > right > down > left
-    moved = False
-    # check up
-    if player[0] > closest_food[1][0]:
-        # make sure you stay on the board
-        if player[0]-1 >= 1:
-            new_position = [player[0]-1, player[1]]
-            # if not occupied by a player, move
-            if new_position not in players:
-                occupied_spaces[i] = new_position
-                moved = True
-            # if food is eaten, update score and move food
-            if new_position in foods:
-                score[i % 2 == 1] += 1
-                occupied_spaces[closest_food[2]] = find_empty_spot(occupied_spaces)
-    # check right
-    if not moved and player[1] < closest_food[1][1]:
-        # make sure you stay on the board
-        if player[1]+1 <= BOARD_SIZE:
-            new_position = [player[0], player[1]+1]
-            # if not occupied by a player, move
-            if new_position not in players:
-                occupied_spaces[i] = new_position
-                moved = True
-            # if food is eaten, update score and move food
-            if new_position in foods:
-                score[i % 2 == 1] += 1
-                occupied_spaces[closest_food[2]] = find_empty_spot(occupied_spaces)
-    # check down
-    if not moved and player[0] < closest_food[1][0]:
-        # make sure you stay on the board
-        if player[0]+1 <= BOARD_SIZE:
-            new_position = [player[0]+1, player[1]]
-            # if not occupied by a player, move
-            if new_position not in players:
-                occupied_spaces[i] = new_position
-                moved = True
-            # if food is eaten, update score and move food
-            if new_position in foods:
-                score[i % 2 == 1] += 1
-                occupied_spaces[closest_food[2]] = find_empty_spot(occupied_spaces)
-    # check left
-    if not moved and player[1] > closest_food[1][1]:
-        # make sure you stay on the board
-        if player[1]-1 >= 1:
-            new_position = [player[0], player[1]-1]
-            # if not occupied by a player, move
-            if new_position not in players:
-                occupied_spaces[i] = new_position
-                # moved = True
-            # if food is eaten, update score and move food
-            if new_position in foods:
-                score[i % 2 == 1] += 1
-                occupied_spaces[closest_food[2]] = find_empty_spot(occupied_spaces)
-
-    # if stuck against a wall and can't move, stand still (ie. don't do anything)
-
-    return occupied_spaces
+class State:
+    def __init__(self):
+        self.players = []
+        self.foods = []
+        for p in range(NUM_PLAYERS):
+            self.players.append(GreedyClockwiseAgent(find_empty_spot(self)))
+        for f in range(NUM_FOOD):
+            self.foods.append(Food(find_empty_spot(self)))
+        self.round = 1
+        self.score = [0] * NUM_PLAYERS
 
 
-def coop_ai():
-    sess = tf.Session()
-    saver = tf.train.import_meta_graph('./simple_simple_clean_copy1.meta')
-    ckpt = tf.train.get_checkpoint_state('./')
-    # saver.restore(sess, tf.train.latest_checkpoint('./'))
-    saver.restore(sess, ckpt.model_checkpoint_path)
-    model = load_model('./dqn3nnowood_332_99_0001_1_sgd_1000_no_a95d_filt25_q1_bt_continue_final.h5')
+class Food:
+    def __init__(self, position):
+        self.position = position
 
 
-###################################################
-# GAME
-###################################################
-def initialize_board():
-    # initialize players
-    p1 = [3, 3]  # team 1
-    p2 = [3, BOARD_SIZE-2]  # team 2
-    p3 = [BOARD_SIZE-2, BOARD_SIZE-2]  # team 1
-    p4 = [BOARD_SIZE-2, 3]  # team 2
-    occupied_spaces = [p1, p2, p3, p4]
-
-    # initialize food
-    f1 = find_empty_spot(occupied_spaces)
-    occupied_spaces.append(f1)
-    f2 = find_empty_spot(occupied_spaces)
-    occupied_spaces.append(f2)
-    f3 = find_empty_spot(occupied_spaces)
-    occupied_spaces.append(f3)
-    f4 = find_empty_spot(occupied_spaces)
-    occupied_spaces.append(f4)
-
-    return occupied_spaces
-
-
-def find_empty_spot(occupied_spaces):
+def find_empty_spot(board):
     while True:
         spot = [random.randint(1, BOARD_SIZE), random.randint(1, BOARD_SIZE)]
-        if spot not in occupied_spaces:
+        if (spot not in [p.position for p in board.players]) and (spot not in [f.position for f in board.foods]):
             return spot
 
 
-def play_round(occupied_spaces, score):
+def play_round(board):
+    # get new desired positions
+    desired_spaces = [[0, 0]] * NUM_PLAYERS
     for i in range(NUM_PLAYERS):
-        occupied_spaces = greedy_clockwise(i, occupied_spaces, score)
+        desired_spaces[i] = board.players[i].move(board)
 
-    return occupied_spaces, score
+    # move players, award points, and track eaten foods
+    eaten = []
+    for i in range(NUM_PLAYERS):
+
+        # check for food
+        ate_food = False
+        for f in range(NUM_FOOD):
+            if desired_spaces[i] == board.foods[f].position:
+                ate_food = True
+                if f not in eaten:
+                    eaten.append(f)
+                break
+
+        # check for collision
+        collided = False
+        for j in range(NUM_PLAYERS):
+            if desired_spaces[i] == desired_spaces[j]:
+                if i != j:
+                    collided = True
+                    break
+
+        # award points
+        if ate_food:
+            board.score[i] += 2
+            if collided:
+                board.score[i] -= 1
+
+        # move the player
+        if not collided:
+            board.players[i].position = desired_spaces[i]
+        else:
+            board.players[i].stuck = True
+
+    # move eaten foods
+    for f in eaten:
+        board.foods[f].position = find_empty_spot(board)
+
+    # if stuck for more than 1 turn, pick a different direction
+    for i in range(NUM_PLAYERS):
+        if board.players[i].stuck:
+            board.players[i].position = find_empty_spot(board)
+            board.players[i].stuck = False
+
+    board.round += 1
+    return board
 
 
-def display_board(occupied_spaces, score):
+def display_board(board):
     print("\n\n\n\n" + ". " * (BOARD_SIZE+1))
     for row in range(1, BOARD_SIZE+1):
-        row_string = "" + (". " * (BOARD_SIZE+1))
+        if row == BOARD_SIZE:
+            row_string = "" + (". " * (BOARD_SIZE + 1))
+        else:
+            row_string = ". " + ("  " * (BOARD_SIZE - 1)) + "."
         i = 1
-        for player in occupied_spaces[:NUM_PLAYERS]:
-            if player[0] == row:
-                row_string = row_string[:player[1]*2-1] + str(i) + row_string[player[1]*2:]
+        for player in board.players:
+            if player.position[0] == row:
+                row_string = row_string[:player.position[1]*2-1] + str(i) + row_string[player.position[1]*2:]
             i += 1
-        for food in occupied_spaces[NUM_PLAYERS:]:
-            if food[0] == row:
-                row_string = row_string[:food[1]*2-1] + "o" + row_string[food[1]*2:]
+        for food in board.foods:
+            if food.position[0] == row:
+                row_string = row_string[:food.position[1]*2-1] + "'" + row_string[food.position[1]*2:]
         print(row_string)
-    print("score:", score)
+    print("round:", board.round)
+    print("score:", board.score)
 
 
-###################################################
-# MAIN
-###################################################
 def main():
     # initialize the board
-    occupied_spaces = initialize_board()
-
-    # initialize scores
-    score = [0, 0]
-
-    if DISPLAY:
-        display_board(occupied_spaces, score)
-        if STOP:
-            input()
-        else:
-            time.sleep(0.5)
+    board = State()
 
     # play some rounds
-    for i in range(ROUNDS):
-        occupied_spaces, score = play_round(occupied_spaces, score)
-
+    t = time.time()
+    for r in range(1, ROUNDS+1):
         if DISPLAY:
-            display_board(occupied_spaces, score)
+            display_board(board)
             if STOP:
                 input()
             else:
-                time.sleep(0.5)
+                time.sleep(SPEED)
+        board = play_round(board)
 
-    print("Final score:", score)
+    if DISPLAY:
+        display_board(board)
+        if STOP:
+            input()
+        else:
+            time.sleep(SPEED)
+    print("All scores:", board.score)
+    print("Team scores:", [board.score[0]+board.score[1], board.score[2]+board.score[3]])
+    print(time.time() - t, "seconds")
 
 
 if __name__ == "__main__":
