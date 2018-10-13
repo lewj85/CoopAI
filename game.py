@@ -5,12 +5,12 @@ import numpy as np
 import json
 
 # global variables
-board_size = 6
+board_size = 8
 num_players = 4
 num_food = 4
-rounds = 1000
+rounds = 10000
 display = False
-save_data = False
+save_data = True
 # format = [row, col], starts at [0, 0]
 # players 1 + 2 vs 3 + 4
 
@@ -118,9 +118,9 @@ def main():
             positions = [p.position for p in board.players]
             targets = [[f[0].position, f[1]] for f in [p.pick_target(board) for p in board.players]]
             old_scores = [s for s in board.score]
-            board_mtx = np.zeros([board_size, board_size, 4])
+            board_mtx = np.zeros([board_size, board_size, 4], dtype=int)
             # one-hot encoding: [player, ally, enemy, food]
-            for i in range(len(board.players)):
+            for i in range(num_players):
                 if i == 0:  # player
                     board_mtx[board.players[i].position[0]][board.players[i].position[1]][0] = 1
                 elif i == 1:  # ally
@@ -136,12 +136,14 @@ def main():
         if save_data:
             actions = [p.action for p in board.players]
             new_scores = [s for s in board.score]
+            scores = [0] * num_players
+            for s in range(num_players):
+                scores[s] = new_scores[s] - old_scores[s]
             data_dict = {'board': board_mtx.tolist(),
                          'positions': positions,
                          'targets': targets,
-                         'old_scores': old_scores,
                          'actions': actions,
-                         'new_scores': new_scores}
+                         'scores': scores}
             data = json.dumps(data_dict)
             f.write(data)
             if r != rounds-1:

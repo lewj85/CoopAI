@@ -17,7 +17,7 @@ def main():
     model.compile(loss='mean_squared_error', optimizer=sgd)
 
     # Prep data
-    filename = 'game_data1.json'
+    filename = 'data6x6_1mil.json'
     games = json.load(open(filename))
     num_games = len(games)
 
