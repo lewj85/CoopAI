@@ -1,0 +1,409 @@
+2018-10-15 22:54:40.352343: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+10cnn
+making model
+creating graph
+loading json
+prepping data
+training model
+Train on 800000 samples, validate on 200000 samples
+Epoch 1/100
+ - 750s - loss: 0.1497 - mean_squared_error: 0.1497 - acc: 0.3035 - val_loss: 0.1481 - val_mean_squared_error: 0.1481 - val_acc: 0.3812
+
+Epoch 00001: val_loss improved from inf to 0.14811, saving model to cnn10_f32k5_f32k3_lr001.01-0.15.hdf5
+Epoch 2/100
+ - 752s - loss: 0.1365 - mean_squared_error: 0.1365 - acc: 0.4244 - val_loss: 0.1307 - val_mean_squared_error: 0.1307 - val_acc: 0.4568
+
+Epoch 00002: val_loss improved from 0.14811 to 0.13069, saving model to cnn10_f32k5_f32k3_lr001.02-0.13.hdf5
+Epoch 3/100
+ - 753s - loss: 0.1287 - mean_squared_error: 0.1287 - acc: 0.4692 - val_loss: 0.1268 - val_mean_squared_error: 0.1268 - val_acc: 0.4828
+
+Epoch 00003: val_loss improved from 0.13069 to 0.12676, saving model to cnn10_f32k5_f32k3_lr001.03-0.13.hdf5
+Epoch 4/100
+ - 754s - loss: 0.1226 - mean_squared_error: 0.1226 - acc: 0.5051 - val_loss: 0.1153 - val_mean_squared_error: 0.1153 - val_acc: 0.5425
+
+Epoch 00004: val_loss improved from 0.12676 to 0.11533, saving model to cnn10_f32k5_f32k3_lr001.04-0.12.hdf5
+Epoch 5/100
+ - 754s - loss: 0.1041 - mean_squared_error: 0.1041 - acc: 0.6007 - val_loss: 0.0936 - val_mean_squared_error: 0.0936 - val_acc: 0.6492
+
+Epoch 00005: val_loss improved from 0.11533 to 0.09361, saving model to cnn10_f32k5_f32k3_lr001.05-0.09.hdf5
+Epoch 6/100
+ - 756s - loss: 0.0834 - mean_squared_error: 0.0834 - acc: 0.6958 - val_loss: 0.0745 - val_mean_squared_error: 0.0745 - val_acc: 0.7327
+
+Epoch 00006: val_loss improved from 0.09361 to 0.07452, saving model to cnn10_f32k5_f32k3_lr001.06-0.07.hdf5
+Epoch 7/100
+ - 756s - loss: 0.0661 - mean_squared_error: 0.0661 - acc: 0.7698 - val_loss: 0.0576 - val_mean_squared_error: 0.0576 - val_acc: 0.8036
+
+Epoch 00007: val_loss improved from 0.07452 to 0.05764, saving model to cnn10_f32k5_f32k3_lr001.07-0.06.hdf5
+Epoch 8/100
+ - 755s - loss: 0.0525 - mean_squared_error: 0.0525 - acc: 0.8216 - val_loss: 0.0475 - val_mean_squared_error: 0.0475 - val_acc: 0.8399
+
+Epoch 00008: val_loss improved from 0.05764 to 0.04747, saving model to cnn10_f32k5_f32k3_lr001.08-0.05.hdf5
+Epoch 9/100
+ - 756s - loss: 0.0442 - mean_squared_error: 0.0442 - acc: 0.8510 - val_loss: 0.0413 - val_mean_squared_error: 0.0413 - val_acc: 0.8599
+
+Epoch 00009: val_loss improved from 0.04747 to 0.04127, saving model to cnn10_f32k5_f32k3_lr001.09-0.04.hdf5
+Epoch 10/100
+ - 756s - loss: 0.0388 - mean_squared_error: 0.0388 - acc: 0.8696 - val_loss: 0.0376 - val_mean_squared_error: 0.0376 - val_acc: 0.8728
+
+Epoch 00010: val_loss improved from 0.04127 to 0.03764, saving model to cnn10_f32k5_f32k3_lr001.10-0.04.hdf5
+Epoch 11/100
+ - 755s - loss: 0.0352 - mean_squared_error: 0.0352 - acc: 0.8817 - val_loss: 0.0348 - val_mean_squared_error: 0.0348 - val_acc: 0.8822
+
+Epoch 00011: val_loss improved from 0.03764 to 0.03485, saving model to cnn10_f32k5_f32k3_lr001.11-0.03.hdf5
+Epoch 12/100
+ - 756s - loss: 0.0327 - mean_squared_error: 0.0327 - acc: 0.8904 - val_loss: 0.0325 - val_mean_squared_error: 0.0325 - val_acc: 0.8905
+
+Epoch 00012: val_loss improved from 0.03485 to 0.03250, saving model to cnn10_f32k5_f32k3_lr001.12-0.03.hdf5
+Epoch 13/100
+ - 756s - loss: 0.0308 - mean_squared_error: 0.0308 - acc: 0.8970 - val_loss: 0.0304 - val_mean_squared_error: 0.0304 - val_acc: 0.8976
+
+Epoch 00013: val_loss improved from 0.03250 to 0.03035, saving model to cnn10_f32k5_f32k3_lr001.13-0.03.hdf5
+Epoch 14/100
+ - 755s - loss: 0.0293 - mean_squared_error: 0.0293 - acc: 0.9021 - val_loss: 0.0296 - val_mean_squared_error: 0.0296 - val_acc: 0.9005
+
+Epoch 00014: val_loss improved from 0.03035 to 0.02955, saving model to cnn10_f32k5_f32k3_lr001.14-0.03.hdf5
+Epoch 15/100
+ - 756s - loss: 0.0281 - mean_squared_error: 0.0281 - acc: 0.9059 - val_loss: 0.0279 - val_mean_squared_error: 0.0279 - val_acc: 0.9064
+
+Epoch 00015: val_loss improved from 0.02955 to 0.02788, saving model to cnn10_f32k5_f32k3_lr001.15-0.03.hdf5
+Epoch 16/100
+ - 757s - loss: 0.0270 - mean_squared_error: 0.0270 - acc: 0.9096 - val_loss: 0.0276 - val_mean_squared_error: 0.0276 - val_acc: 0.9069
+
+Epoch 00016: val_loss improved from 0.02788 to 0.02757, saving model to cnn10_f32k5_f32k3_lr001.16-0.03.hdf5
+Epoch 17/100
+ - 756s - loss: 0.0262 - mean_squared_error: 0.0262 - acc: 0.9125 - val_loss: 0.0262 - val_mean_squared_error: 0.0262 - val_acc: 0.9118
+
+Epoch 00017: val_loss improved from 0.02757 to 0.02623, saving model to cnn10_f32k5_f32k3_lr001.17-0.03.hdf5
+Epoch 18/100
+ - 754s - loss: 0.0255 - mean_squared_error: 0.0255 - acc: 0.9147 - val_loss: 0.0260 - val_mean_squared_error: 0.0260 - val_acc: 0.9131
+
+Epoch 00018: val_loss improved from 0.02623 to 0.02596, saving model to cnn10_f32k5_f32k3_lr001.18-0.03.hdf5
+Epoch 19/100
+ - 754s - loss: 0.0248 - mean_squared_error: 0.0248 - acc: 0.9173 - val_loss: 0.0251 - val_mean_squared_error: 0.0251 - val_acc: 0.9159
+
+Epoch 00019: val_loss improved from 0.02596 to 0.02514, saving model to cnn10_f32k5_f32k3_lr001.19-0.03.hdf5
+Epoch 20/100
+ - 764s - loss: 0.0243 - mean_squared_error: 0.0243 - acc: 0.9188 - val_loss: 0.0249 - val_mean_squared_error: 0.0249 - val_acc: 0.9158
+
+Epoch 00020: val_loss improved from 0.02514 to 0.02494, saving model to cnn10_f32k5_f32k3_lr001.20-0.02.hdf5
+Epoch 21/100
+ - 804s - loss: 0.0238 - mean_squared_error: 0.0238 - acc: 0.9205 - val_loss: 0.0261 - val_mean_squared_error: 0.0261 - val_acc: 0.9126
+
+Epoch 00021: val_loss did not improve from 0.02494
+Epoch 22/100
+ - 803s - loss: 0.0234 - mean_squared_error: 0.0234 - acc: 0.9221 - val_loss: 0.0244 - val_mean_squared_error: 0.0244 - val_acc: 0.9182
+
+Epoch 00022: val_loss improved from 0.02494 to 0.02440, saving model to cnn10_f32k5_f32k3_lr001.22-0.02.hdf5
+Epoch 23/100
+ - 800s - loss: 0.0230 - mean_squared_error: 0.0230 - acc: 0.9234 - val_loss: 0.0249 - val_mean_squared_error: 0.0249 - val_acc: 0.9166
+
+Epoch 00023: val_loss did not improve from 0.02440
+Epoch 24/100
+ - 786s - loss: 0.0226 - mean_squared_error: 0.0226 - acc: 0.9248 - val_loss: 0.0233 - val_mean_squared_error: 0.0233 - val_acc: 0.9224
+
+Epoch 00024: val_loss improved from 0.02440 to 0.02327, saving model to cnn10_f32k5_f32k3_lr001.24-0.02.hdf5
+Epoch 25/100
+ - 789s - loss: 0.0223 - mean_squared_error: 0.0223 - acc: 0.9258 - val_loss: 0.0240 - val_mean_squared_error: 0.0240 - val_acc: 0.9195
+
+Epoch 00025: val_loss did not improve from 0.02327
+Epoch 26/100
+ - 787s - loss: 0.0221 - mean_squared_error: 0.0221 - acc: 0.9264 - val_loss: 0.0232 - val_mean_squared_error: 0.0232 - val_acc: 0.9220
+
+Epoch 00026: val_loss improved from 0.02327 to 0.02317, saving model to cnn10_f32k5_f32k3_lr001.26-0.02.hdf5
+Epoch 27/100
+ - 787s - loss: 0.0218 - mean_squared_error: 0.0218 - acc: 0.9275 - val_loss: 0.0235 - val_mean_squared_error: 0.0235 - val_acc: 0.9214
+
+Epoch 00027: val_loss did not improve from 0.02317
+Epoch 28/100
+ - 785s - loss: 0.0215 - mean_squared_error: 0.0215 - acc: 0.9286 - val_loss: 0.0232 - val_mean_squared_error: 0.0232 - val_acc: 0.9220
+
+Epoch 00028: val_loss did not improve from 0.02317
+Epoch 29/100
+ - 786s - loss: 0.0213 - mean_squared_error: 0.0213 - acc: 0.9290 - val_loss: 0.0232 - val_mean_squared_error: 0.0232 - val_acc: 0.9222
+
+Epoch 00029: val_loss improved from 0.02317 to 0.02315, saving model to cnn10_f32k5_f32k3_lr001.29-0.02.hdf5
+Epoch 30/100
+ - 785s - loss: 0.0211 - mean_squared_error: 0.0211 - acc: 0.9297 - val_loss: 0.0228 - val_mean_squared_error: 0.0228 - val_acc: 0.9236
+
+Epoch 00030: val_loss improved from 0.02315 to 0.02275, saving model to cnn10_f32k5_f32k3_lr001.30-0.02.hdf5
+Epoch 31/100
+ - 784s - loss: 0.0209 - mean_squared_error: 0.0209 - acc: 0.9304 - val_loss: 0.0222 - val_mean_squared_error: 0.0222 - val_acc: 0.9256
+
+Epoch 00031: val_loss improved from 0.02275 to 0.02222, saving model to cnn10_f32k5_f32k3_lr001.31-0.02.hdf5
+Epoch 32/100
+ - 787s - loss: 0.0208 - mean_squared_error: 0.0208 - acc: 0.9308 - val_loss: 0.0223 - val_mean_squared_error: 0.0223 - val_acc: 0.9254
+
+Epoch 00032: val_loss did not improve from 0.02222
+Epoch 33/100
+ - 785s - loss: 0.0206 - mean_squared_error: 0.0206 - acc: 0.9315 - val_loss: 0.0224 - val_mean_squared_error: 0.0224 - val_acc: 0.9252
+
+Epoch 00033: val_loss did not improve from 0.02222
+Epoch 34/100
+ - 782s - loss: 0.0205 - mean_squared_error: 0.0205 - acc: 0.9319 - val_loss: 0.0228 - val_mean_squared_error: 0.0228 - val_acc: 0.9243
+
+Epoch 00034: val_loss did not improve from 0.02222
+Epoch 35/100
+ - 781s - loss: 0.0203 - mean_squared_error: 0.0203 - acc: 0.9326 - val_loss: 0.0223 - val_mean_squared_error: 0.0223 - val_acc: 0.9253
+
+Epoch 00035: val_loss did not improve from 0.02222
+Epoch 36/100
+ - 778s - loss: 0.0201 - mean_squared_error: 0.0201 - acc: 0.9332 - val_loss: 0.0223 - val_mean_squared_error: 0.0223 - val_acc: 0.9252
+
+Epoch 00036: val_loss did not improve from 0.02222
+Epoch 37/100
+ - 779s - loss: 0.0200 - mean_squared_error: 0.0200 - acc: 0.9337 - val_loss: 0.0219 - val_mean_squared_error: 0.0219 - val_acc: 0.9269
+
+Epoch 00037: val_loss improved from 0.02222 to 0.02191, saving model to cnn10_f32k5_f32k3_lr001.37-0.02.hdf5
+Epoch 38/100
+ - 780s - loss: 0.0199 - mean_squared_error: 0.0199 - acc: 0.9338 - val_loss: 0.0221 - val_mean_squared_error: 0.0221 - val_acc: 0.9255
+
+Epoch 00038: val_loss did not improve from 0.02191
+Epoch 39/100
+ - 778s - loss: 0.0198 - mean_squared_error: 0.0198 - acc: 0.9342 - val_loss: 0.0222 - val_mean_squared_error: 0.0222 - val_acc: 0.9258
+
+Epoch 00039: val_loss did not improve from 0.02191
+Epoch 40/100
+ - 779s - loss: 0.0197 - mean_squared_error: 0.0197 - acc: 0.9345 - val_loss: 0.0218 - val_mean_squared_error: 0.0218 - val_acc: 0.9275
+
+Epoch 00040: val_loss improved from 0.02191 to 0.02182, saving model to cnn10_f32k5_f32k3_lr001.40-0.02.hdf5
+Epoch 41/100
+ - 779s - loss: 0.0195 - mean_squared_error: 0.0195 - acc: 0.9353 - val_loss: 0.0227 - val_mean_squared_error: 0.0227 - val_acc: 0.9248
+
+Epoch 00041: val_loss did not improve from 0.02182
+Epoch 42/100
+ - 779s - loss: 0.0195 - mean_squared_error: 0.0195 - acc: 0.9354 - val_loss: 0.0213 - val_mean_squared_error: 0.0213 - val_acc: 0.9282
+
+Epoch 00042: val_loss improved from 0.02182 to 0.02131, saving model to cnn10_f32k5_f32k3_lr001.42-0.02.hdf5
+Epoch 43/100
+ - 781s - loss: 0.0193 - mean_squared_error: 0.0193 - acc: 0.9360 - val_loss: 0.0222 - val_mean_squared_error: 0.0222 - val_acc: 0.9255
+
+Epoch 00043: val_loss did not improve from 0.02131
+Epoch 44/100
+ - 778s - loss: 0.0192 - mean_squared_error: 0.0192 - acc: 0.9363 - val_loss: 0.0220 - val_mean_squared_error: 0.0220 - val_acc: 0.9265
+
+Epoch 00044: val_loss did not improve from 0.02131
+Epoch 45/100
+ - 777s - loss: 0.0192 - mean_squared_error: 0.0192 - acc: 0.9364 - val_loss: 0.0209 - val_mean_squared_error: 0.0209 - val_acc: 0.9303
+
+Epoch 00045: val_loss improved from 0.02131 to 0.02087, saving model to cnn10_f32k5_f32k3_lr001.45-0.02.hdf5
+Epoch 46/100
+ - 783s - loss: 0.0191 - mean_squared_error: 0.0191 - acc: 0.9370 - val_loss: 0.0217 - val_mean_squared_error: 0.0217 - val_acc: 0.9280
+
+Epoch 00046: val_loss did not improve from 0.02087
+Epoch 47/100
+ - 780s - loss: 0.0190 - mean_squared_error: 0.0190 - acc: 0.9372 - val_loss: 0.0214 - val_mean_squared_error: 0.0214 - val_acc: 0.9285
+
+Epoch 00047: val_loss did not improve from 0.02087
+Epoch 48/100
+ - 780s - loss: 0.0189 - mean_squared_error: 0.0189 - acc: 0.9375 - val_loss: 0.0212 - val_mean_squared_error: 0.0212 - val_acc: 0.9293
+
+Epoch 00048: val_loss did not improve from 0.02087
+Epoch 49/100
+ - 779s - loss: 0.0188 - mean_squared_error: 0.0188 - acc: 0.9379 - val_loss: 0.0215 - val_mean_squared_error: 0.0215 - val_acc: 0.9286
+
+Epoch 00049: val_loss did not improve from 0.02087
+Epoch 50/100
+ - 778s - loss: 0.0187 - mean_squared_error: 0.0187 - acc: 0.9383 - val_loss: 0.0214 - val_mean_squared_error: 0.0214 - val_acc: 0.9282
+
+Epoch 00050: val_loss did not improve from 0.02087
+Epoch 51/100
+ - 779s - loss: 0.0186 - mean_squared_error: 0.0186 - acc: 0.9383 - val_loss: 0.0209 - val_mean_squared_error: 0.0209 - val_acc: 0.9299
+
+Epoch 00051: val_loss did not improve from 0.02087
+Epoch 52/100
+ - 779s - loss: 0.0186 - mean_squared_error: 0.0186 - acc: 0.9385 - val_loss: 0.0211 - val_mean_squared_error: 0.0211 - val_acc: 0.9298
+
+Epoch 00052: val_loss did not improve from 0.02087
+Epoch 53/100
+ - 779s - loss: 0.0185 - mean_squared_error: 0.0185 - acc: 0.9387 - val_loss: 0.0210 - val_mean_squared_error: 0.0210 - val_acc: 0.9305
+
+Epoch 00053: val_loss did not improve from 0.02087
+Epoch 54/100
+ - 782s - loss: 0.0184 - mean_squared_error: 0.0184 - acc: 0.9392 - val_loss: 0.0210 - val_mean_squared_error: 0.0210 - val_acc: 0.9296
+
+Epoch 00054: val_loss did not improve from 0.02087
+Epoch 55/100
+ - 779s - loss: 0.0184 - mean_squared_error: 0.0184 - acc: 0.9393 - val_loss: 0.0215 - val_mean_squared_error: 0.0215 - val_acc: 0.9279
+
+Epoch 00055: val_loss did not improve from 0.02087
+Epoch 56/100
+ - 777s - loss: 0.0183 - mean_squared_error: 0.0183 - acc: 0.9396 - val_loss: 0.0211 - val_mean_squared_error: 0.0211 - val_acc: 0.9296
+
+Epoch 00056: val_loss did not improve from 0.02087
+Epoch 57/100
+ - 781s - loss: 0.0182 - mean_squared_error: 0.0182 - acc: 0.9396 - val_loss: 0.0211 - val_mean_squared_error: 0.0211 - val_acc: 0.9298
+
+Epoch 00057: val_loss did not improve from 0.02087
+Epoch 58/100
+ - 778s - loss: 0.0181 - mean_squared_error: 0.0181 - acc: 0.9403 - val_loss: 0.0209 - val_mean_squared_error: 0.0209 - val_acc: 0.9306
+
+Epoch 00058: val_loss did not improve from 0.02087
+Epoch 59/100
+ - 780s - loss: 0.0181 - mean_squared_error: 0.0181 - acc: 0.9405 - val_loss: 0.0210 - val_mean_squared_error: 0.0210 - val_acc: 0.9305
+
+Epoch 00059: val_loss did not improve from 0.02087
+Epoch 60/100
+ - 782s - loss: 0.0180 - mean_squared_error: 0.0180 - acc: 0.9406 - val_loss: 0.0217 - val_mean_squared_error: 0.0217 - val_acc: 0.9275
+
+Epoch 00060: val_loss did not improve from 0.02087
+Epoch 61/100
+ - 783s - loss: 0.0180 - mean_squared_error: 0.0180 - acc: 0.9409 - val_loss: 0.0210 - val_mean_squared_error: 0.0210 - val_acc: 0.9303
+
+Epoch 00061: val_loss did not improve from 0.02087
+Epoch 62/100
+ - 785s - loss: 0.0179 - mean_squared_error: 0.0179 - acc: 0.9409 - val_loss: 0.0214 - val_mean_squared_error: 0.0214 - val_acc: 0.9290
+
+Epoch 00062: val_loss did not improve from 0.02087
+Epoch 63/100
+ - 787s - loss: 0.0179 - mean_squared_error: 0.0179 - acc: 0.9411 - val_loss: 0.0209 - val_mean_squared_error: 0.0209 - val_acc: 0.9305
+
+Epoch 00063: val_loss did not improve from 0.02087
+Epoch 64/100
+ - 786s - loss: 0.0178 - mean_squared_error: 0.0178 - acc: 0.9418 - val_loss: 0.0208 - val_mean_squared_error: 0.0208 - val_acc: 0.9311
+
+Epoch 00064: val_loss improved from 0.02087 to 0.02080, saving model to cnn10_f32k5_f32k3_lr001.64-0.02.hdf5
+Epoch 65/100
+ - 788s - loss: 0.0177 - mean_squared_error: 0.0177 - acc: 0.9417 - val_loss: 0.0204 - val_mean_squared_error: 0.0204 - val_acc: 0.9315
+
+Epoch 00065: val_loss improved from 0.02080 to 0.02045, saving model to cnn10_f32k5_f32k3_lr001.65-0.02.hdf5
+Epoch 66/100
+ - 787s - loss: 0.0177 - mean_squared_error: 0.0177 - acc: 0.9415 - val_loss: 0.0209 - val_mean_squared_error: 0.0209 - val_acc: 0.9303
+
+Epoch 00066: val_loss did not improve from 0.02045
+Epoch 67/100
+ - 787s - loss: 0.0176 - mean_squared_error: 0.0176 - acc: 0.9422 - val_loss: 0.0212 - val_mean_squared_error: 0.0212 - val_acc: 0.9295
+
+Epoch 00067: val_loss did not improve from 0.02045
+Epoch 68/100
+ - 789s - loss: 0.0176 - mean_squared_error: 0.0176 - acc: 0.9421 - val_loss: 0.0208 - val_mean_squared_error: 0.0208 - val_acc: 0.9302
+
+Epoch 00068: val_loss did not improve from 0.02045
+Epoch 69/100
+ - 787s - loss: 0.0176 - mean_squared_error: 0.0176 - acc: 0.9423 - val_loss: 0.0205 - val_mean_squared_error: 0.0205 - val_acc: 0.9321
+
+Epoch 00069: val_loss did not improve from 0.02045
+Epoch 70/100
+ - 786s - loss: 0.0175 - mean_squared_error: 0.0175 - acc: 0.9424 - val_loss: 0.0209 - val_mean_squared_error: 0.0209 - val_acc: 0.9306
+
+Epoch 00070: val_loss did not improve from 0.02045
+Epoch 71/100
+ - 788s - loss: 0.0175 - mean_squared_error: 0.0175 - acc: 0.9428 - val_loss: 0.0208 - val_mean_squared_error: 0.0208 - val_acc: 0.9304
+
+Epoch 00071: val_loss did not improve from 0.02045
+Epoch 72/100
+ - 785s - loss: 0.0174 - mean_squared_error: 0.0174 - acc: 0.9428 - val_loss: 0.0211 - val_mean_squared_error: 0.0211 - val_acc: 0.9299
+
+Epoch 00072: val_loss did not improve from 0.02045
+Epoch 73/100
+ - 782s - loss: 0.0174 - mean_squared_error: 0.0174 - acc: 0.9429 - val_loss: 0.0206 - val_mean_squared_error: 0.0206 - val_acc: 0.9314
+
+Epoch 00073: val_loss did not improve from 0.02045
+Epoch 74/100
+ - 797s - loss: 0.0173 - mean_squared_error: 0.0173 - acc: 0.9431 - val_loss: 0.0210 - val_mean_squared_error: 0.0210 - val_acc: 0.9312
+
+Epoch 00074: val_loss did not improve from 0.02045
+Epoch 75/100
+ - 799s - loss: 0.0173 - mean_squared_error: 0.0173 - acc: 0.9430 - val_loss: 0.0205 - val_mean_squared_error: 0.0205 - val_acc: 0.9321
+
+Epoch 00075: val_loss did not improve from 0.02045
+Epoch 76/100
+ - 797s - loss: 0.0173 - mean_squared_error: 0.0173 - acc: 0.9434 - val_loss: 0.0212 - val_mean_squared_error: 0.0212 - val_acc: 0.9299
+
+Epoch 00076: val_loss did not improve from 0.02045
+Epoch 77/100
+ - 768s - loss: 0.0172 - mean_squared_error: 0.0172 - acc: 0.9435 - val_loss: 0.0206 - val_mean_squared_error: 0.0206 - val_acc: 0.9314
+
+Epoch 00077: val_loss did not improve from 0.02045
+Epoch 78/100
+ - 763s - loss: 0.0172 - mean_squared_error: 0.0172 - acc: 0.9436 - val_loss: 0.0209 - val_mean_squared_error: 0.0209 - val_acc: 0.9304
+
+Epoch 00078: val_loss did not improve from 0.02045
+Epoch 79/100
+ - 764s - loss: 0.0171 - mean_squared_error: 0.0171 - acc: 0.9437 - val_loss: 0.0208 - val_mean_squared_error: 0.0208 - val_acc: 0.9311
+
+Epoch 00079: val_loss did not improve from 0.02045
+Epoch 80/100
+ - 770s - loss: 0.0171 - mean_squared_error: 0.0171 - acc: 0.9440 - val_loss: 0.0204 - val_mean_squared_error: 0.0204 - val_acc: 0.9324
+
+Epoch 00080: val_loss improved from 0.02045 to 0.02040, saving model to cnn10_f32k5_f32k3_lr001.80-0.02.hdf5
+Epoch 81/100
+ - 766s - loss: 0.0171 - mean_squared_error: 0.0171 - acc: 0.9442 - val_loss: 0.0202 - val_mean_squared_error: 0.0202 - val_acc: 0.9331
+
+Epoch 00081: val_loss improved from 0.02040 to 0.02023, saving model to cnn10_f32k5_f32k3_lr001.81-0.02.hdf5
+Epoch 82/100
+ - 763s - loss: 0.0170 - mean_squared_error: 0.0170 - acc: 0.9444 - val_loss: 0.0203 - val_mean_squared_error: 0.0203 - val_acc: 0.9326
+
+Epoch 00082: val_loss did not improve from 0.02023
+Epoch 83/100
+ - 765s - loss: 0.0170 - mean_squared_error: 0.0170 - acc: 0.9442 - val_loss: 0.0203 - val_mean_squared_error: 0.0203 - val_acc: 0.9325
+
+Epoch 00083: val_loss did not improve from 0.02023
+Epoch 84/100
+ - 766s - loss: 0.0169 - mean_squared_error: 0.0169 - acc: 0.9447 - val_loss: 0.0205 - val_mean_squared_error: 0.0205 - val_acc: 0.9323
+
+Epoch 00084: val_loss did not improve from 0.02023
+Epoch 85/100
+ - 765s - loss: 0.0169 - mean_squared_error: 0.0169 - acc: 0.9446 - val_loss: 0.0204 - val_mean_squared_error: 0.0204 - val_acc: 0.9324
+
+Epoch 00085: val_loss did not improve from 0.02023
+Epoch 86/100
+ - 766s - loss: 0.0169 - mean_squared_error: 0.0169 - acc: 0.9448 - val_loss: 0.0201 - val_mean_squared_error: 0.0201 - val_acc: 0.9337
+
+Epoch 00086: val_loss improved from 0.02023 to 0.02009, saving model to cnn10_f32k5_f32k3_lr001.86-0.02.hdf5
+Epoch 87/100
+ - 766s - loss: 0.0169 - mean_squared_error: 0.0169 - acc: 0.9448 - val_loss: 0.0203 - val_mean_squared_error: 0.0203 - val_acc: 0.9327
+
+Epoch 00087: val_loss did not improve from 0.02009
+Epoch 88/100
+ - 764s - loss: 0.0169 - mean_squared_error: 0.0169 - acc: 0.9448 - val_loss: 0.0202 - val_mean_squared_error: 0.0202 - val_acc: 0.9326
+
+Epoch 00088: val_loss did not improve from 0.02009
+Epoch 89/100
+ - 762s - loss: 0.0168 - mean_squared_error: 0.0168 - acc: 0.9451 - val_loss: 0.0204 - val_mean_squared_error: 0.0204 - val_acc: 0.9332
+
+Epoch 00089: val_loss did not improve from 0.02009
+Epoch 90/100
+ - 758s - loss: 0.0168 - mean_squared_error: 0.0168 - acc: 0.9451 - val_loss: 0.0204 - val_mean_squared_error: 0.0204 - val_acc: 0.9326
+
+Epoch 00090: val_loss did not improve from 0.02009
+Epoch 91/100
+ - 758s - loss: 0.0167 - mean_squared_error: 0.0167 - acc: 0.9452 - val_loss: 0.0204 - val_mean_squared_error: 0.0204 - val_acc: 0.9324
+
+Epoch 00091: val_loss did not improve from 0.02009
+Epoch 92/100
+ - 763s - loss: 0.0167 - mean_squared_error: 0.0167 - acc: 0.9455 - val_loss: 0.0201 - val_mean_squared_error: 0.0201 - val_acc: 0.9339
+
+Epoch 00092: val_loss did not improve from 0.02009
+Epoch 93/100
+ - 758s - loss: 0.0166 - mean_squared_error: 0.0166 - acc: 0.9458 - val_loss: 0.0203 - val_mean_squared_error: 0.0203 - val_acc: 0.9328
+
+Epoch 00093: val_loss did not improve from 0.02009
+Epoch 94/100
+ - 759s - loss: 0.0166 - mean_squared_error: 0.0166 - acc: 0.9456 - val_loss: 0.0201 - val_mean_squared_error: 0.0201 - val_acc: 0.9339
+
+Epoch 00094: val_loss improved from 0.02009 to 0.02006, saving model to cnn10_f32k5_f32k3_lr001.94-0.02.hdf5
+Epoch 95/100
+ - 757s - loss: 0.0166 - mean_squared_error: 0.0166 - acc: 0.9458 - val_loss: 0.0203 - val_mean_squared_error: 0.0203 - val_acc: 0.9330
+
+Epoch 00095: val_loss did not improve from 0.02006
+Epoch 96/100
+ - 758s - loss: 0.0166 - mean_squared_error: 0.0166 - acc: 0.9459 - val_loss: 0.0205 - val_mean_squared_error: 0.0205 - val_acc: 0.9324
+
+Epoch 00096: val_loss did not improve from 0.02006
+Epoch 97/100
+ - 758s - loss: 0.0166 - mean_squared_error: 0.0166 - acc: 0.9459 - val_loss: 0.0212 - val_mean_squared_error: 0.0212 - val_acc: 0.9304
+
+Epoch 00097: val_loss did not improve from 0.02006
+Epoch 98/100
+ - 758s - loss: 0.0165 - mean_squared_error: 0.0165 - acc: 0.9461 - val_loss: 0.0204 - val_mean_squared_error: 0.0204 - val_acc: 0.9331
+
+Epoch 00098: val_loss did not improve from 0.02006
+Epoch 99/100
+ - 759s - loss: 0.0165 - mean_squared_error: 0.0165 - acc: 0.9459 - val_loss: 0.0201 - val_mean_squared_error: 0.0201 - val_acc: 0.9331
+
+Epoch 00099: val_loss did not improve from 0.02006
+Epoch 100/100
+ - 760s - loss: 0.0165 - mean_squared_error: 0.0165 - acc: 0.9463 - val_loss: 0.0200 - val_mean_squared_error: 0.0200 - val_acc: 0.9339
+Using TensorFlow backend.
+
+Epoch 00100: val_loss improved from 0.02006 to 0.01999, saving model to cnn10_f32k5_f32k3_lr001.100-0.02.hdf5
