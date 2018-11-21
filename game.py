@@ -1,30 +1,68 @@
 import random
-import time
-from agents import *
+# import time
 import numpy as np
 import json
+
+# consider adding a punishment to 'require' cooperation, such as losing 5 points if you and your teammate eat food on the same round
+# consider adding multiplication of ally_predicted_action probability and subtracting the worst q_val from each 'grouping' of 5
 
 # global variables
 board_size = 8
 num_players = 4
 num_food = 4
-rounds = 10000
+rounds = 1100001
 display = False
-save_data = True
-# format = [row, col], starts at [0, 0]
+save_data = False
+# format = [row, col], NOT [x, y]! starts at [0, 0]
 # players 1 + 2 vs 3 + 4
 
 
+def get_desired_space_from_action(old_pos, action):
+    #0: "up",
+    #1: "right",
+    #2: "down",
+    #3: "left",
+    #4: "stay"
+    # [row, col], NOT [x, y]
+    if action == 0:
+        new_pos = [old_pos[0] - 1, old_pos[1]]
+    elif action == 1:
+        new_pos = [old_pos[0], old_pos[1] + 1]
+    elif action == 2:
+        new_pos = [old_pos[0] + 1, old_pos[1]]
+    elif action == 3:
+        new_pos = [old_pos[0], old_pos[1] - 1]
+    elif action == 4:
+        new_pos = old_pos
+    return new_pos
+
+
 class State:
-    def __init__(self):
+    def __init__(self, copy_players=None, copy_foods=None, copy_rounds=None, copy_score=None):
         self.players = []
         self.foods = []
+        from agents import GreedyClockwiseAgent, CooperativeAI
         for p in range(num_players):
-            self.players.append(GreedyClockwiseAgent(find_empty_spot(self)))
+            if copy_players:
+                self.players.append(GreedyClockwiseAgent(copy_players[p]))
+            else:
+                if p == 1:
+                    self.players.append(CooperativeAI(find_empty_spot(self)))
+                else:
+                    self.players.append(GreedyClockwiseAgent(find_empty_spot(self)))
         for f in range(num_food):
-            self.foods.append(Food(find_empty_spot(self)))
-        self.round = 1
-        self.score = [0] * num_players
+            if copy_foods:
+                self.foods.append(Food(copy_foods[f]))
+            else:
+                self.foods.append(Food(find_empty_spot(self)))
+        if copy_rounds:
+            self.round = copy_rounds
+        else:
+            self.round = 1
+        if copy_score:
+            self.score = copy_score
+        else:
+            self.score = [0] * num_players
 
 
 class Food:
@@ -32,6 +70,7 @@ class Food:
         self.position = position
 
 
+# returns [row, col] position, not [x, y]
 def find_empty_spot(board):
     players = [p.position for p in board.players]
     foods = [f.position for f in board.foods]
@@ -41,12 +80,28 @@ def find_empty_spot(board):
             return spot
 
 
-def play_round(board):
+def play_round(original_board, action=-1):
+    # in case we're just looking ahead, change the copy, not the original
+    if action == -1:
+        board = original_board
+    else:
+        # copy everything except the agents. use greedy for all 4
+        copy_players = [p.position for p in original_board.players]
+        copy_foods =   [f.position for f in original_board.foods]
+        copy_rounds =  original_board.round
+        copy_scores =  original_board.score[:]
+        board = State(copy_players, copy_foods, copy_rounds, copy_scores)
     # get new desired positions
     desired_spaces = [[0, 0]] * num_players
-    for i in range(num_players):
-        desired_spaces[i] = board.players[i].move(board)
-    # move players, award points, and track eaten foods
+    # get players' desired moves
+    desired_spaces[0] = board.players[0].move(board)
+    if action == -1:
+        desired_spaces[1] = board.players[1].move(board)
+    else:
+        desired_spaces[1] = get_desired_space_from_action(board.players[0].position, action)
+    desired_spaces[2] = board.players[2].move(board)
+    desired_spaces[3] = board.players[3].move(board)
+    # physically move players, award points, and track eaten foods
     eaten = []
     for i in range(num_players):
         # check for food
@@ -64,15 +119,20 @@ def play_round(board):
                 if i != j:
                     collided = True
                     break
+        # check for walls
+        overboard = False
+        if (desired_spaces[i][0] < 0 or desired_spaces[i][0] >= board_size or
+            desired_spaces[i][1] < 0 or desired_spaces[i][1] >= board_size):
+            overboard = True
         # award points
         if ate_food:
             board.score[i] += 2
             if collided:
                 board.score[i] -= 1
-        # move the player
-        if not collided:
+        # move the player (if not overboard)
+        if not collided and not overboard:
             board.players[i].position = desired_spaces[i]
-        else:
+        elif not overboard:
             board.players[i].stuck = True
     # move eaten foods
     for f in eaten:
@@ -83,6 +143,7 @@ def play_round(board):
             board.players[i].position = find_empty_spot(board)
             board.players[i].stuck = False
     board.round += 1
+    return board
 
 
 def display_board(board):
@@ -106,10 +167,13 @@ def display_board(board):
 
 
 def main():
+    print("8dqn")
+
     # initialize the board
     board = State()
+    old_scores = [0, 0, 0, 0]
     # play some rounds
-    t = time.time()
+    # t = time.time()
     if save_data:
         f = open("data.json", "w+")
         f.write("[")
@@ -132,7 +196,7 @@ def main():
         if display:
             display_board(board)
             input()
-        play_round(board)
+        board = play_round(board)
         if save_data:
             actions = [p.action for p in board.players]
             new_scores = [s for s in board.score]
@@ -151,12 +215,16 @@ def main():
             else:
                 f.write("]")
                 f.close()
+        if board.round%10000 == 0:
+            new_scores = [board.score[i] - old_scores[i] for i in range(4)]
+            old_scores = board.score[:]
+            print("All scores:", new_scores)
     if display:
         display_board(board)
         input()
     print("All scores:", board.score)
     print("Team scores:", [board.score[0]+board.score[1], board.score[2]+board.score[3]])
-    print(time.time() - t, "seconds")
+    # print(time.time() - t, "seconds")
 
 
 if __name__ == "__main__":

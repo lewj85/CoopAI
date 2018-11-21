@@ -1,143 +1,120 @@
-from keras.models import Model, load_model
-from keras.layers import Conv2D, Dense, Flatten, Input, concatenate
-from keras.regularizers import l2
-from keras.optimizers import SGD
 import numpy as np
+from keras.models import Model, load_model
+from keras.layers import Input, Conv2D, Dense, Flatten, Multiply
+from keras.optimizers import SGD, RMSprop
+from keras.callbacks import ModelCheckpoint
+from game import State, Food, find_empty_spot, play_round
 import json
-import copy
+import random
+
+# globals
+board_size = 8
+n_actions = 5
+# loadpath = "dqn8_f32k5_f32k3_rms_lr00025.100-02.hdf5"
+savepath = "dqn8_f32k5_f32k3_rms_lr00025.{epoch:02d}-{val_loss:.2f}.hdf5"
+memorypath = "8cnn.json"
+batch_size = 32
+gamma = 0.99 # discount factor
 
 
 def main():
+    print("8dqn")
+
     # Create DQN
+    print("making model")
     model = make_dqn()
+    # model = load_model(loadpath)
 
     # Create computational graph
-    lr = 0.0001
-    sgd = SGD(lr=lr, decay=0.0, momentum=0.0, nesterov=False)
-    model.compile(loss='mean_squared_error', optimizer=sgd)
+    print("creating graph")
+    lr = 0.00025
+    # sgd = SGD(lr=lr, decay=0.0, momentum=0.0, nesterov=False)
+    # model.compile(optimizer=sgd, loss='mse', metrics=['mse', 'accuracy'])
+    rms = RMSprop(lr=lr, rho=0.95, epsilon=0.01)
+    model.compile(optimizer=rms, loss='mse', metrics=['mse', 'accuracy'])
 
-    # Prep data
-    filename = 'data6x6_1mil.json'
-    games = json.load(open(filename))
-    num_games = len(games)
+    # Load memory and starting state
+    # memory = json.loads(memorypath)
+    memory = []
+    state = State()
 
-    epochs = 2
-    for e in range(epochs):
-        for g in range(num_games):
-            # Prep the data
-            data, win_or_loss = prep_data(games[g])
-
-            # Train the model
-            train_model(model, data, win_or_loss)
-
-        # Save each epoch in case we want to end early
-        model.save('./dqn1_331_0001_sgd_1000_a95d.h5')
+    # Train model
+    iterations = 1000
+    for iteration in range(iterations):
+        q_iteration(model, memory, iteration)
 
 
 def make_dqn():
-    # number of features for state info = 13*13*12
-    a1 = Input(shape=(13, 13, 12), name='a1')
-    output1 = cnn_part(a1)
-    # number of features for bomb timer info = 13*13
-    a2 = Input(shape=(13, 13, 1), name='a2')
-    output2 = cnn_part(a2)
-    # number of features for flame timer info = 13*13
-    a3 = Input(shape=(13, 13, 1), name='a3')
-    output3 = cnn_part(a3)
-    # number of other features = 8 + action_pair 12
-    a4 = Input(shape=(20,), name='a4')
-    alist = [output1, output2, output3, a4]
-    # Join the inputs
-    a5 = concatenate(alist, axis=-1)
-    # Hidden layer
-    all_as = dense_part(a5, 1000, 'relu')
+    all_combos = n_actions * n_actions
+    # Inputs - the 4 is one-hot encoded [player, ally, enemy, food]
+    frames_input = Input((board_size, board_size, 4), name='frames')
+    actions_input = Input((all_combos,), name='mask')
+    # 1st hidden layer is a large cnn
+    conv1 = Conv2D(32, 5, strides=1, kernel_initializer='random_uniform')(frames_input)
+    # 2nd hidden layer is a more local cnn
+    conv2 = Conv2D(32, 3, strides=1, kernel_initializer='random_uniform')(conv1)
+    # flatten after convolutions so all dense layers have 2 dimensions
+    conv_flattened = Flatten()(conv2)
+    # 3rd hidden layer is fully-connected
+    hidden = Dense(128, activation='relu')(conv_flattened)
     # Output layer
-    output_final = dense_part(all_as, 1, 'linear')
-    model = Model(inputs=[a1, a2, a3, a4], outputs=output_final)
+    output = Dense(all_combos)(hidden)
+    # Multiply the output by the mask
+    filtered_output = Multiply()([output, actions_input])
+
+    model = Model(input=[frames_input, actions_input], output=filtered_output)
     return model
 
 
-def cnn_part(a):
-    filters = 25
-    kernel_size = 3
-    stride = 1
-    weight_decay = 0.01
-    net = Conv2D(filters, kernel_size, strides=stride, kernel_initializer='random_uniform',
-                 kernel_regularizer=l2(weight_decay))(a)
-    net = Flatten()(net)
-    return net
+def q_iteration(model, state, memory, iteration):
+    # Get random batch
+    if len(memory) > batch_size:
+        start_states = random.sample(memory, batch_size)
+
+    # epsilon goes from 1 down to 0.1 over 900,000 rounds
+    if iteration > 900000:
+        epsilon = 0.1
+    else:
+        epsilon = (1000000 - iteration) / 1000000
+
+    # Choose the action: random action if < epsilon or best action if > epsilon
+    if random.random() < epsilon:
+        action = random.randint(0, 4)
+    else:
+        q_vals = model.predict([next_states, np.ones(actions.shape)])
+        action = q_vals.index(max(q_vals))
+
+    # Play one game iteration (note: according to the next paper, you should actually play 4 times here)
+    new_frame, reward, is_done, _ = env.step(action)
+    memory.add(state, action, new_)
+
+    # Fit (when there are enough samples)
+    if len(memory) > batch_size:
+        fit_batch(model, start_states, actions, rewards, next_states)
 
 
-def dense_part(a, node_num, activation_type):
-    net = Dense(units=node_num, activation=activation_type, kernel_initializer='random_uniform')(a)
-    return net
+def fit_batch(model, start_states, actions, rewards, next_states):
+    """Do one deep Q learning iteration
+    Params:
+    - model: The DQN
+    - start_states: numpy array of starting states
+    - actions: numpy array of one-hot encoded actions corresponding to the start states
+    - rewards: numpy array of rewards corresponding to the start states and actions
+    - next_states: numpy array of the resulting states corresponding to the start states and actions
+    - is_terminal: numpy boolean array of whether the resulting state is terminal
+    """
+    next_Q_values = model.predict([next_states, np.ones(actions.shape)])
+    # The Q values of each start state is the reward + gamma * the max next state Q value
+    Q_values = rewards + gamma * np.max(next_Q_values, axis=1)
+    # Fit the keras model. Note how we are passing the actions as the mask and multiplying
+    # the targets by the actions.
+    model.fit([start_states, actions], actions * Q_values[:, None], epochs=1, batch_size=len(start_states), verbose=2)
 
-
-def prep_data(game):
-    states = len(game['states_w_action_pairs'])
-    # print(states)
-    features = len(game['states_w_action_pairs'][0])
-    data = np.zeros((states, features))
-    for d in range(states):
-        for e in range(features):
-            data[d][e] = game['states_w_action_pairs'][d][e]
-    win_or_loss = int(game['reward'])
-    shaped_data1 = np.reshape(data[:, :2028], (states, 13, 13, 12))
-    shaped_data2 = np.reshape(data[:, 2028:2197], (states, 13, 13, 1))
-    shaped_data3 = np.reshape(data[:, 2197:2366], (states, 13, 13, 1))
-    shaped_data4 = np.reshape(data[:, 2366:], (states, 20))  # 2386
-    data_cat = {'a1': shaped_data1, 'a2': shaped_data2, 'a3': shaped_data3, 'a4': shaped_data4}
-    return data_cat, win_or_loss
-
-
-def train_model(model, data, win_or_loss, batch_size=1, epochs=1):
-    num_examples = data['a4'].shape[0]
-    print(num_examples)
-
-    all_a1 = data['a1']
-    all_a2 = data['a2']
-    all_a3 = data['a3']
-    all_a4 = data['a4']
-
-    r = 0
-    diminishing_reward_value = 0.99
-    alpha_learning_rate = 0.95
-    decay = diminishing_reward_value ** np.arange(num_examples)
-
-    # Train on one state at a time, starting from the end
-    for i in range(num_examples - 1, -1, -1):
-
-        X_train = {'a1': np.reshape(all_a1[i], (1, 13, 13, 12)),
-                   'a2': np.reshape(all_a2[i], (1, 13, 13, 1)),
-                   'a3': np.reshape(all_a3[i], (1, 13, 13, 1)),
-                   'a4': np.reshape(all_a4[i], (1, 20))}
-        y_train = np.zeros((1,))
-        if i == num_examples - 1:
-            y_train[0] = 2 * win_or_loss
-            # q_prime = y_train[0]
-        else:
-            # find max q_prime
-            q_primes = []
-            X_prime = {}
-            X_prime['a1'] = np.reshape(all_a1[i + 1], (1, 13, 13, 12))
-            X_prime['a2'] = np.reshape(all_a2[i + 1], (1, 13, 13, 1))
-            X_prime['a3'] = np.reshape(all_a3[i + 1], (1, 13, 13, 1))
-            X_prime['a4'] = np.reshape(all_a4[i + 1], (1, 20))
-            # first reset action taken
-            for j in range(6):
-                X_prime['a4'][0][-6 + j] = 0
-            # get Q values for all 6 possible actions
-            last_j = 0
-            for j in range(6):
-                X_prime['a4'][0][-6 + last_j] = 0
-                X_prime['a4'][0][-6 + j] = 1
-                q_primes.append(model.predict(X_prime))
-                last_j = j
-            q_prime = max(q_primes)
-
-            # Q function
-            y_train[0] = (1 - alpha_learning_rate) * model.predict(X_train) + \
-                         alpha_learning_rate * (r + decay[i] * q_prime)
-
-            # Training
-            model.fit(x=X_train, y=y_train, epochs=epochs, batch_size=batch_size, verbose=2)
+    # # Create checkpoints
+    # checkpoint = ModelCheckpoint(savepath, monitor='val_loss', verbose=2, save_best_only=True, save_weights_only=False,
+    #                              mode='auto', period=1)
+    # callbacks_list = [checkpoint]
+    #
+    # # Train the model
+    # print("training model")
+    # model.fit(x=X, y=y, epochs=1, batch_size=1, validation_split=0.2, verbose=2, callbacks=callbacks_list)
