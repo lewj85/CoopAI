@@ -2,7 +2,7 @@ from game import board_size, play_round, num_food, get_desired_space_from_action
 import numpy as np
 import random
 from keras.models import Model, load_model
-from keras.layers import Input, Conv2D, Dense, Flatten, Multiply
+from keras.layers import Input, Conv2D, Dense, Flatten, Multiply, concatenate
 from keras.optimizers import SGD, RMSprop, Nadam
 from keras import backend as K
 from collections.abc import Sequence
@@ -114,49 +114,54 @@ class CooperativeAI:
         self.stuck = False
         self.num_actions = 5
         # self.loadpath_cnn = "models/cnn8_f32k5_f32k3_lr0001.99-0.02.hdf5"
-        # self.loadpath_dqn = "models/dqn8_f32k5_f32k3_lr00025 - 900000 - 0.1960301250219345.hdf5"
-        self.loadpath_dqn = "models/dqn8d_f128k5_sgdn_lr00001_rewardself10 - 600000 - 0.4958277642726898.hdf5"
-        self.savepath = "dqn8_f128k5_sgdn_lr00001"
+        # self.loadpath_dqn = "models/dqn8_f64k5_allyinput_sgdnesterov_lr01 - 250000 - 0.1740705668926239.hdf5"
+        self.loadpath_dqn = "models/dqn8_f64k5_allyinput_sgdnesterov_lr002 - 900000 - 0.5051863789558411.hdf5"
+        self.savepath = "dqn8e_f128k5_allyinput_sgdn_lr00001_rewardself10"
         # self.model_cnn = load_model(self.loadpath_cnn)
-        # self.model_dqn = self.make_dqn()
-        self.model_dqn = load_model(self.loadpath_dqn)
+        self.model_dqn = self.make_dqn()
+        # self.model_dqn = load_model(self.loadpath_dqn)
         lr = 0.00001
-        optimizer = SGD(lr=lr, decay=0.0, momentum=0.0, nesterov=True)
+        optimizer = SGD(lr=lr, nesterov=True)
         # optimizer = RMSprop(lr=lr, rho=0.95, epsilon=0.01)
         # optimizer = Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=None, schedule_decay=0.004)
         self.model_dqn.compile(optimizer=optimizer, loss='mse')
         # don't compile after loading
         # self.model_dqn.optimizer = optimizer
-        # K.set_value(self.model_dqn.optimizer.lr, lr)
-        print("sgdn 0.00001, 128k5, 128 hidden, batch 16, mem500k, gamma 0.8")
+        # K.set_value(self.model_dqn.optimizer.lr, 0.002)
         self.memory = Memory(500000)
         self.min_memory_size = 50000
         self.batch_size = 16
         self.iteration = 0
         self.epsilon = 1
         self.gamma = 0.8
-        self.mask1 = np.ones((1, 25))
-        self.mask16 = np.ones((16, 25))
+        # self.mask1 = np.ones((1, 25))
+        self.mask5 = np.ones((1, self.num_actions))
+        # self.mask32 = np.ones((32, 25))
+        self.mask325 = np.ones((self.batch_size, self.num_actions))
         self.best_loss = 10000
 
     def make_dqn(self):
-        all_combos = self.num_actions * self.num_actions
+        # all_combos = self.num_actions * self.num_actions
+
         # Inputs - the 4 is one-hot encoded [player, ally, enemy, food]
-        frames_input = Input((board_size, board_size, 4), name='frames')
-        actions_input = Input((all_combos,), name='mask')
+        frames_input = Input(shape=(board_size, board_size, 4), name='x1')
+        ally_action_input = Input((self.num_actions,), name="x2")
+        # actions_input = Input((all_combos,), name='mask')
+        output_mask = Input((self.num_actions,), name='mask')
         # 1st hidden layer is a large cnn
         conv1 = Conv2D(128, 5, strides=1, kernel_initializer='random_uniform')(frames_input)
         # 2nd hidden layer is a more local cnn
         # conv2 = Conv2D(32, 3, strides=1, kernel_initializer='random_uniform')(conv1)
         # flatten after convolutions so all dense layers have 2 dimensions
         conv_flattened = Flatten()(conv1)
+        combined = concatenate([ally_action_input, conv_flattened], axis=1)
         # 3rd hidden layer is fully-connected
-        hidden = Dense(128, activation='relu')(conv_flattened)
+        hidden = Dense(128, activation='relu')(combined)
         # Output layer
-        output = Dense(all_combos)(hidden)
+        output = Dense(self.num_actions)(hidden)
         # Multiply the output by the mask
-        filtered_output = Multiply()([output, actions_input])
-        model = Model(input=[frames_input, actions_input], output=filtered_output)
+        filtered_output = Multiply()([output, output_mask])
+        model = Model(input=[frames_input, ally_action_input, output_mask], output=filtered_output)
         return model
 
     def make_np_array(self, board):
@@ -177,12 +182,9 @@ class CooperativeAI:
         # Convert to numpy array
         start_state = self.make_np_array(board)
 
-        # epsilon goes from 1 down to 0.1 over 900,000 rounds
+        # epsilon goes from 1 down to 0.1
         if self.epsilon > 0.1:
             self.epsilon -= 0.000001
-
-        # get Q values
-        all_q_vals = self.model_dqn.predict([start_state, self.mask1])
 
         # get ally's predicted move
         # ally_predicted_action = self.model_cnn.predict(start_state)
@@ -196,18 +198,20 @@ class CooperativeAI:
         # get ally's next move
         tmp_board = play_round(board, 4)
         ally_action = tmp_board.players[0].action
-        start_index = ally_action * self.num_actions
+        tmp_list = [0,0,0,0,0]
+        tmp_list[ally_action] = 1
+        ally_np = np.array(tmp_list, dtype=np.uint8)
+        ally_np = np.reshape(ally_np, (1,5))
+
+        # get Q values
+        all_q_vals = self.model_dqn.predict([start_state, ally_np, self.mask5])
 
         # Choose your action: random action if < epsilon or best action if > epsilon
         rand_val = random.random()
         if rand_val < self.epsilon:
             action = random.randint(0, 4)
         else:
-            if ally_action == self.num_actions - 1:
-                q_vals = all_q_vals[0][start_index:]
-            else:
-                q_vals = all_q_vals[0][start_index:start_index + self.num_actions]
-            qlist = q_vals.tolist()
+            qlist = all_q_vals[0].tolist()
             action = qlist.index(max(qlist))
 
         # Play one game iteration with the chosen action
@@ -220,8 +224,9 @@ class CooperativeAI:
         reward = 0
         # first add actual points (use team scores rather than just the player's score)
         # team 1 score minus team 2 score
-        reward += (new_board.score[0] - board.score[0] + new_board.score[1] - board.score[1] -
-                  (new_board.score[2] - board.score[2] + new_board.score[3] - board.score[3])) * 10
+        # reward += (new_board.score[0] - board.score[0] + new_board.score[1] - board.score[1] -
+        #           (new_board.score[2] - board.score[2] + new_board.score[3] - board.score[3]))
+        reward += (new_board.score[1] - board.score[1]) * 10
 
         # get everyone else's targets
         # find your target based on closest food in direction of action taken (don't consider foods 'behind' you)
@@ -230,34 +235,33 @@ class CooperativeAI:
         # very small reward for moving toward center of map
         # other rewards
 
-        action_mask = np.zeros((1, 25), dtype=np.uint8)
-        action_mask[0][start_index+action] = 1
-        self.memory.append([start_state, action_mask, reward, new_state])
+        # convert action into np
+        tmp_list = [0, 0, 0, 0, 0]
+        tmp_list[action] = 1
+        action_np = np.array(tmp_list, dtype=np.uint8)
+        action_np = np.reshape(action_np, (1, 5))
+        self.memory.append([start_state, ally_np, action_np, reward, new_state])
 
         # Fit (when there are enough samples)
         if len(self.memory) > self.min_memory_size:
             batch = random.sample(self.memory, self.batch_size)
             start_states = np.array([np.squeeze(x[0]) for x in batch], dtype=np.uint8) # remove first dimension
-            actions =      np.array([np.squeeze(x[1]) for x in batch], dtype=np.uint8) # remove first dimension
-            rewards =      np.array([x[2] for x in batch])
-            next_states =  np.array([np.squeeze(x[3]) for x in batch], dtype=np.uint8) # remove first dimension
-            self.fit_batch(start_states, actions, rewards, next_states)
+            ally_actions = np.array([np.squeeze(x[1]) for x in batch], dtype=np.uint8) # remove first dimension
+            actions =      np.array([np.squeeze(x[2]) for x in batch], dtype=np.uint8) # remove first dimension
+            rewards =      np.array([x[3] for x in batch])
+            next_states =  np.array([np.squeeze(x[4]) for x in batch], dtype=np.uint8) # remove first dimension
+            self.fit_batch(start_states, ally_actions, actions, rewards, next_states)
             self.iteration += 1
 
         # Make a new prediction now that the weights have been updated
-        all_q_vals = self.model_dqn.predict([start_state, self.mask1])
-        if ally_action == self.num_actions - 1:
-            q_vals = all_q_vals[0][start_index:]
-        else:
-            q_vals = all_q_vals[0][start_index:start_index + self.num_actions]
-        qlist = q_vals.tolist()
+        all_q_vals = self.model_dqn.predict([start_state, ally_np, self.mask5])
+        qlist = all_q_vals[0].tolist()
         if self.iteration%10000==1:
             print(qlist)
         action = qlist.index(max(qlist))
-        # print(action)
         return get_desired_space_from_action(self.position, action)
 
-    def fit_batch(self, start_states, actions, rewards, next_states):
+    def fit_batch(self, start_states, ally_actions, actions, rewards, next_states):
         """Do one deep Q learning iteration.
         Params:
         - start_states: numpy array of starting states
@@ -266,12 +270,12 @@ class CooperativeAI:
         - next_states: numpy array of the resulting states corresponding to the start states and actions
         """
         # First, predict the Q values of the next states. Note how we are passing ones as the mask.
-        next_Q_values = self.model_dqn.predict([next_states, self.mask16])
+        next_Q_values = self.model_dqn.predict([next_states, ally_actions, self.mask325])
         # The Q values of each start state is the reward + gamma * the max next state Q value
         Q_values = rewards + self.gamma * np.max(next_Q_values, axis=1)
         # Fit the keras model. Note how we are passing the actions as the mask and multiplying
         # the targets by the actions.
-        X = [start_states, actions]
+        X = [start_states, ally_actions, actions]
         y = actions * Q_values[:, None]
         self.model_dqn.fit(X, y, epochs=1, batch_size=len(start_states), verbose=0)
         # print feedback every 100000 iterations
