@@ -115,7 +115,7 @@ class CooperativeAI:
         self.num_actions = 5
         # self.loadpath_cnn = "models/cnn8_f32k5_f32k3_lr0001.99-0.02.hdf5"
         # self.loadpath_dqn = "models/dqn8_f32k5_f32k3_lr00025 - 900000 - 0.1960301250219345.hdf5"
-        self.loadpath_dqn = "models/dqn8d_f128k5_sgdn_lr00001_rewardself10 - 600000 - 0.4958277642726898.hdf5"
+        self.loadpath_dqn = "models/dqn8d3_f256k5_sgdn_lr00001_rewardself10 - 4400000 - 0.13076165318489075.hdf5"
         self.savepath = "dqn8_f128k5_sgdn_lr00001"
         # self.model_cnn = load_model(self.loadpath_cnn)
         # self.model_dqn = self.make_dqn()
@@ -124,16 +124,16 @@ class CooperativeAI:
         optimizer = SGD(lr=lr, decay=0.0, momentum=0.0, nesterov=True)
         # optimizer = RMSprop(lr=lr, rho=0.95, epsilon=0.01)
         # optimizer = Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=None, schedule_decay=0.004)
-        self.model_dqn.compile(optimizer=optimizer, loss='mse')
+        # self.model_dqn.compile(optimizer=optimizer, loss='mse')
         # don't compile after loading
-        # self.model_dqn.optimizer = optimizer
-        # K.set_value(self.model_dqn.optimizer.lr, lr)
+        self.model_dqn.optimizer = optimizer
+        K.set_value(self.model_dqn.optimizer.lr, lr)
         print("sgdn 0.00001, 128k5, 128 hidden, batch 16, mem500k, gamma 0.8")
         self.memory = Memory(500000)
-        self.min_memory_size = 50000
+        self.min_memory_size = 17
         self.batch_size = 16
         self.iteration = 0
-        self.epsilon = 1
+        self.epsilon = 0.0001
         self.gamma = 0.8
         self.mask1 = np.ones((1, 25))
         self.mask16 = np.ones((16, 25))

@@ -41,7 +41,7 @@ class State:
     def __init__(self, copy_players=None, copy_foods=None, copy_rounds=None, copy_score=None):
         self.players = []
         self.foods = []
-        from agents5 import GreedyClockwiseAgent, CooperativeAI
+        from agents_test import GreedyClockwiseAgent, CooperativeAI
         for p in range(num_players):
             if copy_players:
                 self.players.append(GreedyClockwiseAgent(copy_players[p]))
@@ -167,8 +167,6 @@ def display_board(board):
 
 
 def main():
-    print("8dqn")
-
     # initialize the board
     board = State()
     old_scores = [0, 0, 0, 0]
