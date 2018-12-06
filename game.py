@@ -10,12 +10,12 @@ import json
 board_size = 8
 num_players = 4
 num_food = 4
-rounds = 1100001
+rounds = 10000
 display = False
 save_data = False
 # format = [row, col], NOT [x, y]! starts at [0, 0]
 # players 1 + 2 vs 3 + 4
-
+move_counters = [0, 0, 0, 0, 0]
 
 def get_desired_space_from_action(old_pos, action):
     #0: "up",
@@ -101,6 +101,8 @@ def play_round(original_board, action=-1):
         desired_spaces[1] = get_desired_space_from_action(board.players[0].position, action)
     desired_spaces[2] = board.players[2].move(board)
     desired_spaces[3] = board.players[3].move(board)
+    if action == -1:
+        move_counters[board.players[1].action] += 1
     # physically move players, award points, and track eaten foods
     eaten = []
     for i in range(num_players):
@@ -223,6 +225,7 @@ def main():
     print("All scores:", board.score)
     print("Team scores:", [board.score[0]+board.score[1], board.score[2]+board.score[3]])
     # print(time.time() - t, "seconds")
+    print(move_counters)
 
 
 if __name__ == "__main__":

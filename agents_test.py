@@ -110,7 +110,7 @@ class CooperativeAI:
         self.stuck = False
         self.num_actions = 5
         # self.loadpath_cnn = "models/cnn8_f32k5_f32k3_lr0001.99-0.02.hdf5"
-        self.loadpath_dqn = "models/dqn8d_f256k5_sgdn_lr00001_rewardself10_batch1 - 5100000 - 1.008330225944519.hdf5"
+        self.loadpath_dqn = "for paper/dqn8d3_f256k5_sgdn_lr00001_rewardself10 - 9800000 - 0.2657600939273834.hdf5"
         self.model_dqn = load_model(self.loadpath_dqn)
         self.mask1 = np.ones((1, 25))
 
@@ -153,5 +153,5 @@ class CooperativeAI:
             q_vals = all_q_vals[0][start_index:start_index + self.num_actions]
         qlist = q_vals.tolist()
         action = qlist.index(max(qlist))
-        # print(action)
+        self.action = action
         return get_desired_space_from_action(self.position, action)
